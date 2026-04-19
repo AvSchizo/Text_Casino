@@ -8,7 +8,7 @@ dataFile = Path(__file__).parent / "Save_Files" / "BJ_Pass_Data.json"
 
 autoSaveData = True
 # True for using passed data, False for self init values
-usePassData = True
+usePassData = False
 
 if usePassData:
 
