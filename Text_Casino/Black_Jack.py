@@ -6,6 +6,7 @@ from Save_Data import saveData, loadData
 from pathlib import Path
 dataFile = Path(__file__).parent / "Save_Files" / "BJ_Pass_Data.json"
 
+autoSaveData = True
 # True for using passed data, False for self init values
 usePassData = True
 
@@ -16,7 +17,7 @@ if usePassData:
 
 else:
 
-	minBet = 10
+	minBet = 1
 	pStartMoney = 200
 
 
@@ -71,19 +72,25 @@ def recycle():
 	return deck
 
 
-def Bet(money):
+def Bet(money, bettingMin):
 
 	while True:
 
 		print(f"Money: {money}")
+		if bettingMin > 1:
+			print(f"Minimum bet denomination: {bettingMin}")
 		bet = input("Bet: ")
 
 		if bet.isdigit():
 			bet = int(bet)
 
-			if bet <= money:
+			if bet % bettingMin == 0:
+				if bet <= money:
+					print()
+					return bet
+			else:
+				print("Sorry, invalid bet according to minimum bet denomination")
 				print()
-				return bet
 		
 		elif bet == "quit":
 			return "quit"
@@ -193,6 +200,8 @@ while True:
 			print()
 			break
 		elif menuChoice == quitChoiceKey:
+			if autoSaveData and usePassData:
+				saveData(dataFile, "pStartMoney", p.money)
 			quit()
 		elif menuChoice == konamiChoiceKey:
 			if p.money < 1000:
@@ -217,7 +226,7 @@ while True:
 			print()
 		Deck = Shoe
 
-		bet = Bet(p.money)
+		bet = Bet(p.money, minBet)
 		if bet == "quit":
 			break
 

@@ -9,5 +9,5 @@ def saveData(fileName, key, value):
 	data = loadData(fileName)
 	data[key] = value
 	with open(fileName, "w") as f:
-		json.dump(data, f)
+		json.dump(data, f, indent=4)
 	
