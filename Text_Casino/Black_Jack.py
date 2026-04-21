@@ -190,7 +190,7 @@ while True:
 		validActions = [startChoiceKey, quitChoiceKey]
 
 		print()
-		print("BLACKJACK")
+		print("Now Playing Blackjack")
 		print()
 
 		print(f"Actions: {validActions}")
