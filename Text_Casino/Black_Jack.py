@@ -2,15 +2,15 @@ import random
 import math
 import time
 
-from Save_Data import saveData, loadData
-from pathlib import Path
-dataFile = Path(__file__).parent / "Save_Files" / "BJ_Pass_Data.json"
 
 autoSaveData = True
 # True for using passed data, False for self init values
 usePassData = False
 
 if usePassData:
+	from Save_Data import saveData, loadData
+	from pathlib import Path
+	dataFile = Path(__file__).parent / "Save_Files" / "BJ_Pass_Data.json"
 
 	minBet = loadData(dataFile)["minBet"]
 	pStartMoney = loadData(dataFile)["pStartMoney"]
