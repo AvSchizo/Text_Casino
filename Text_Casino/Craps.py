@@ -88,7 +88,7 @@ cp["afunc"]["playerClass"] = playerClass
 
 
 
-def breakStacks(wanted, ID):
+def breakStacks(wanted):
 
 	wantSect = wanted.split(";")
 
