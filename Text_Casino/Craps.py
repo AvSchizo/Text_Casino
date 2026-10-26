@@ -12,6 +12,16 @@ cp = {
 		# com
 		4,
 	],
+	"placeNames": [
+		[
+			"pass bar",
+			"no pass bar",
+		],
+		[
+			"Pass Bar",
+			"Don't Pass Bar",
+		]
+	],
 }
 
 
@@ -46,6 +56,8 @@ class boardClass():
 		self.stacks = {
 			"pass bar": [],
 			"no pass bar": [],
+			"come": [],
+			"no come": [],
 		}
 	
 
@@ -80,7 +92,7 @@ class playerClass():
 			for s in l:
 				if s.id == self.id:
 					ao.append(s)
-					# print(f"{s.type}, ${s.value}")
+					# print(f"{s.place}, ${s.value}")
 		return ao
 
 cp["afunc"]["playerClass"] = playerClass
@@ -104,6 +116,15 @@ def breakStacks(wanted):
 	return data
 
 cp["afunc"]["breakStacks"] = breakStacks
+
+
+
+def returnToPlayer(stack):
+
+	for p in cp["players"]:
+
+		if p.id == stack.id:
+			p.money += stack.value
 
 
 
@@ -137,12 +158,17 @@ def mainLoop():
 				continue
 			
 			# UI
-			print("Bets on the board:")
-			for key in cp["board"].stacks.keys():
-				print(key, end=":")
-				for s in cp["board"].stacks[key]:
-					print(f" [${s.value}; ID={s.id}]", end="")
-				print()
+			## printing player bets
+			print("Your bets:")
+			playerBets = p.getBets(cp["board"])
+			
+			if len(betList) == 0:
+				print("None")
+			else:
+				for s in betList:
+					print(f"{s.place}, ${s.value}")
+
+
 			
 			print()
 			print(f"Player ID: {p.id}")
@@ -150,16 +176,17 @@ def mainLoop():
 			#
 			
 			pin = input("New bet: ")
-			if pin == "STOP":
+			if pin == "none":
 				pass
 			else:
+				# adding bets
 				for s in cp["afunc"]["breakStacks"](pin):
-					cp["board"].addStack(s[0], s[1], p.id)
+					if p.money >= s[1]:
+						cp["board"].addStack(s[0], s[1], p.id)
+						p.money -= s[1]
 
-			prop = p.getBets(cp["board"])
 
-			if len(prop) > 0:
-				cp["afunc"]["next"]()
+		print()
 		
 
 		# rolling
@@ -169,13 +196,56 @@ def mainLoop():
 		result = 0
 		for i in range(2):
 			result += rolls[i]
+		print(f"Rolled {result}")
+		next(True)
 		
-		
-		# givin out
+
+		# deciding what to
+
+		winCause = {
+			"pass bar": 1,
+			"no pass bar": -1,
+		}
+
+		loseCause = {
+			"pass bar": -1,
+			"no pass bar": 1,
+		}
+
+		snaple = {}
 		if cp["point"] == None:
 
 			if result == 7 or result == 11:
-				pass
+				snaple = winCause
+
+			elif result in [2, 3, 12]:
+				snaple = loseCause
+
+			else:
+				cp["point"] = result
+
+		else:
+
+			if result in [7, 11]:
+				if result == 7:
+					result = loseCause
+				result["come"] = 1
+				result["no come"] = -1
+
+
+		# givin out
+		for key in snaple.keys():
+			for i, s in enumerate(cp["board"].stacks[key]):
+
+				if snaple[key] == 1:
+					returnStack = s
+					returnStack.value *= 2
+					returnToPlayer(returnStack)
+					cp["board"].stacks[key].pop(0)
+
+				elif snaple[key] == -1:
+					cp["board"].stacks[key].pop(0)
+
 
 cp["mainLoop"] = mainLoop
 
