@@ -62,10 +62,12 @@ class boardClass():
 	
 
 
-	def addStack(self, type, value, pID):
+	def addStack(self, type, value, pID, taking=True):
 
 		if type in self.stacks.keys():
 			self.stacks[type].append(cp["afunc"]["stackClass"](value, pID, type))
+			if taking:
+				cp["players"][pID].money -= value
 
 cp["afunc"]["boardClass"] = boardClass
 
@@ -161,12 +163,28 @@ def mainLoop():
 			## printing player bets
 			print("Your bets:")
 			playerBets = p.getBets(cp["board"])
+
+			printingPlace = {}
+			for key in cp["board"].stacks.keys():
+				printingPlace[key] = "None"
+
+			for b in playerBets:
+				a = b.place
+				v = b.value
+				if printingPlace[a] == "None":
+					printingPlace[a] = ""
+				else:
+					printingPlace[a] += ", "
+				printingPlace[a] += str(v)
+
+			for e in printingPlace.keys():
+				print(f"{e}: {printingPlace[e]}")
 			
-			if len(betList) == 0:
-				print("None")
-			else:
-				for s in betList:
-					print(f"{s.place}, ${s.value}")
+			# if len(playerBets) == 0:
+			# 	print("None")
+			# else:
+			# 	for s in playerBets:
+			# 		print(f"{s.place}, ${s.value}")
 
 
 			
@@ -183,7 +201,6 @@ def mainLoop():
 				for s in cp["afunc"]["breakStacks"](pin):
 					if p.money >= s[1]:
 						cp["board"].addStack(s[0], s[1], p.id)
-						p.money -= s[1]
 
 
 		print()
